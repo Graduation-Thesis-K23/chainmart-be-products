@@ -21,6 +21,11 @@ export class ProductsController {
     return this.productsService.findAll();
   }
 
+  @MessagePattern('products.findbyids')
+  findByIds(@Payload() ids: string[]) {
+    return this.productsService.findByIds(ids);
+  }
+
   @MessagePattern('products.findbyid')
   findById(@Payload() id: string) {
     return this.productsService.findById(id);

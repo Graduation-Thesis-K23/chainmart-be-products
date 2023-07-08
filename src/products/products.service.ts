@@ -45,6 +45,21 @@ export class ProductsService {
     }
   }
 
+  async findByIds(ids: string[]) {
+    try {
+      return await this.productModel
+        .find({
+          _id: {
+            $in: ids,
+          },
+        })
+        .lean()
+        .exec();
+    } catch (error) {
+      throw new RpcException('Cannot find products by list of id');
+    }
+  }
+
   async findById(id: string): Promise<Product> {
     if (!isValidObjectId(id)) {
       throw new RpcException('Invalid ID');
