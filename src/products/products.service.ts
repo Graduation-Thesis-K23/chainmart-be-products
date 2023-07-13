@@ -1,6 +1,6 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { RpcException } from '@nestjs/microservices';
+import { ClientKafka, RpcException } from '@nestjs/microservices';
 import { PaginateModel, isValidObjectId } from 'mongoose';
 import slugify from 'slugify';
 
@@ -11,6 +11,9 @@ import { Product } from './schemas/product.shema';
 @Injectable()
 export class ProductsService {
   constructor(
+    @Inject('SEARCH_SERVICE')
+    private readonly searchClient: ClientKafka,
+
     @InjectModel(Product.name)
     private productModel: PaginateModel<Product>,
   ) {}
@@ -24,6 +27,8 @@ export class ProductsService {
             slugify(createProductDto.name, { lower: true }) + '-' + Date.now(),
         })
         .then((doc) => doc.toObject());
+
+      this.searchClient.emit('search.product.index', createdProduct);
 
       return createdProduct;
     } catch (error) {

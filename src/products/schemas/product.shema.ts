@@ -32,6 +32,9 @@ export class Product {
   @Prop({ type: mongoose.Schema.Types.Mixed })
   specifications: object;
 
+  @Prop()
+  description: string;
+
   @Prop({
     default: 100 * 365, // 100 years
   })
