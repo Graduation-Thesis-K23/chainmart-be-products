@@ -101,6 +101,8 @@ export class ProductsService {
       throw new RpcException(`Product with (${id}) not found`);
     }
 
+    this.searchClient.emit('search.product.update', product);
+
     return product;
   }
 
@@ -113,6 +115,8 @@ export class ProductsService {
     if (!product) {
       throw new RpcException(`Product with (${id}) not found`);
     }
+
+    this.searchClient.emit('search.product.delete', id);
 
     return `Product with id(${id}) have been deleted`;
   }
