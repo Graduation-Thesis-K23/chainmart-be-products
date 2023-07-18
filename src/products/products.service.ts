@@ -37,13 +37,14 @@ export class ProductsService {
     }
   }
 
-  async findAll() {
+  async findAll(page: number, limit: number) {
     try {
       const options = {
-        page: 1,
-        limit: 10,
+        page: page || 1,
+        limit: limit || 10,
         lean: true,
       };
+      console.log('options', options);
       return await this.productModel.paginate({}, options);
     } catch (error) {
       throw new RpcException('Cannot find products');

@@ -6,6 +6,11 @@ import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { ExceptionFilter } from 'src/filters/rpc-exception.filter';
 
+interface PaginationOptions {
+  page?: number;
+  limit?: number;
+}
+
 @Controller()
 @UseFilters(new ExceptionFilter())
 export class ProductsController {
@@ -17,8 +22,8 @@ export class ProductsController {
   }
 
   @MessagePattern('products.findall')
-  findAll() {
-    return this.productsService.findAll();
+  findAll(@Payload() payload: PaginationOptions) {
+    return this.productsService.findAll(payload.page, payload.limit);
   }
 
   @MessagePattern('products.findbyids')
@@ -38,7 +43,6 @@ export class ProductsController {
 
   @MessagePattern('products.update')
   update(@Payload() updateProductDto: UpdateProductDto) {
-    console.log(updateProductDto);
     return this.productsService.update(updateProductDto.id, updateProductDto);
   }
 

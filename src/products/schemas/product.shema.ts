@@ -44,6 +44,16 @@ export class Product {
     unique: true,
   })
   slug: string;
+
+  @Prop({
+    default: Date.now,
+  })
+  created_at: Date;
+
+  @Prop({
+    nullable: false,
+  })
+  category_id: string;
 }
 
 export const ProductSchema = SchemaFactory.createForClass(Product);
