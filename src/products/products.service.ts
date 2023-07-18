@@ -64,8 +64,6 @@ export class ProductsService {
         .lean()
         .exec();
 
-      console.log('products', products);
-
       const staticPaths: StaticPaths[] = products.map((product) => ({
         params: {
           slug: product.slug,
