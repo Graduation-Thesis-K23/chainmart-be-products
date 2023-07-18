@@ -8,6 +8,12 @@ import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { Product } from './schemas/product.shema';
 
+export interface StaticPaths {
+  params: {
+    slug: string;
+  };
+}
+
 @Injectable()
 export class ProductsService {
   constructor(
@@ -46,6 +52,27 @@ export class ProductsService {
       };
       console.log('options', options);
       return await this.productModel.paginate({}, options);
+    } catch (error) {
+      throw new RpcException('Cannot find products');
+    }
+  }
+
+  async staticPaths() {
+    try {
+      const products = await this.productModel
+        .find({}, { slug: 1 })
+        .lean()
+        .exec();
+
+      console.log('products', products);
+
+      const staticPaths: StaticPaths[] = products.map((product) => ({
+        params: {
+          slug: product.slug,
+        },
+      }));
+
+      return staticPaths;
     } catch (error) {
       throw new RpcException('Cannot find products');
     }

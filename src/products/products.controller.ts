@@ -1,7 +1,7 @@
 import { Controller, UseFilters } from '@nestjs/common';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 
-import { ProductsService } from './products.service';
+import { ProductsService, StaticPaths } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { ExceptionFilter } from 'src/filters/rpc-exception.filter';
@@ -24,6 +24,11 @@ export class ProductsController {
   @MessagePattern('products.findall')
   findAll(@Payload() payload: PaginationOptions) {
     return this.productsService.findAll(payload.page, payload.limit);
+  }
+
+  @MessagePattern('products.staticpaths')
+  staticPaths(): Promise<StaticPaths[]> {
+    return this.productsService.staticPaths();
   }
 
   @MessagePattern('products.findbyids')
