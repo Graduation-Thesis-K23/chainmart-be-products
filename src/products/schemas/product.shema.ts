@@ -40,6 +40,9 @@ export class Product {
   })
   acceptable_expiry_threshold: number;
 
+  @Prop()
+  category: string;
+
   @Prop({
     unique: true,
   })
