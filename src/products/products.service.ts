@@ -84,7 +84,6 @@ export class ProductsService {
             $in: ids,
           },
         })
-        .lean()
         .exec();
     } catch (error) {
       throw new RpcException('Cannot find products by list of id');
@@ -96,7 +95,7 @@ export class ProductsService {
       throw new RpcException('Invalid ID');
     }
 
-    const product = await this.productModel.findById(id).lean().exec();
+    const product = (await this.productModel.findById(id).exec()).toJSON();
     if (!product) {
       throw new RpcException(`Product with (${id}) not found`);
     }
@@ -105,7 +104,8 @@ export class ProductsService {
   }
 
   async findBySlug(slug: string): Promise<Product> {
-    const product = await this.productModel.findOne({ slug }).lean().exec();
+    // select contains virtual field
+    const product = (await this.productModel.findOne({ slug }).exec()).toJSON();
     if (!product) {
       throw new RpcException(`Product with slug(${slug}) not found`);
     }

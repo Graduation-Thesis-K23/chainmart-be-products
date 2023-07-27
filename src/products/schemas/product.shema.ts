@@ -40,7 +40,9 @@ export class Product {
   })
   acceptable_expiry_threshold: number;
 
-  @Prop()
+  @Prop({
+    nullable: false,
+  })
   category: string;
 
   @Prop({
@@ -52,11 +54,16 @@ export class Product {
     default: Date.now,
   })
   created_at: Date;
-
-  @Prop({
-    nullable: false,
-  })
-  category_id: string;
 }
 
-export const ProductSchema = SchemaFactory.createForClass(Product);
+export const ProductSchemaTemp = SchemaFactory.createForClass(Product);
+
+ProductSchemaTemp.virtual('id').get(function () {
+  return this._id.toHexString();
+});
+
+ProductSchemaTemp.set('toJSON', {
+  virtuals: true,
+});
+
+export const ProductSchema = ProductSchemaTemp;
