@@ -14,13 +14,16 @@ export class ProductsService {
     @Inject('SEARCH_SERVICE')
     private readonly searchClient: ClientKafka,
 
+    @Inject('BATCH_SERVICE')
+    private readonly batchClient: ClientKafka,
+
     @InjectModel(Product.name)
     private productModel: PaginateModel<Product>,
   ) {}
 
-  async create(createProductDto: CreateProductDto): Promise<Product> {
+  async create(createProductDto: CreateProductDto) {
     try {
-      const createdProduct = await this.productModel
+      const product = await this.productModel
         .create({
           ...createProductDto,
           slug:
@@ -28,9 +31,16 @@ export class ProductsService {
         })
         .then((doc) => doc.toObject());
 
-      this.searchClient.emit('search.product.index', createdProduct);
+      this.searchClient.emit('search.product.index', product);
+      this.batchClient.emit('batches.orders.created', {
+        sync_id: product._id,
+        product_code: product.product_code,
+        price: product.price,
+        sale: product.sale,
+        acceptable_expiry_threshold: product.acceptable_expiry_threshold,
+      });
 
-      return createdProduct;
+      return product;
     } catch (error) {
       console.error(error);
       throw new RpcException('Failed to create product');
@@ -106,7 +116,7 @@ export class ProductsService {
     return product;
   }
 
-  async delete(id: string): Promise<string> {
+  async delete(id: string) {
     if (!isValidObjectId(id)) {
       throw new RpcException('Invalid ID');
     }
