@@ -59,4 +59,14 @@ export class Product {
   category_id: string;
 }
 
-export const ProductSchema = SchemaFactory.createForClass(Product);
+const ProductSchemaTemp = SchemaFactory.createForClass(Product);
+
+ProductSchemaTemp.virtual('id').get(function () {
+  return this._id.toHexString();
+});
+
+ProductSchemaTemp.set('toJSON', {
+  virtuals: true,
+});
+
+export const ProductSchema = ProductSchemaTemp;

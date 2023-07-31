@@ -24,7 +24,7 @@ export class ProductsService {
     private productModel: PaginateModel<Product>,
   ) {}
 
-  async create(createProductDto: CreateProductDto): Promise<Product> {
+  async create(createProductDto: CreateProductDto) {
     try {
       const createdProduct = await this.productModel
         .create({
@@ -32,7 +32,7 @@ export class ProductsService {
           slug:
             slugify(createProductDto.name, { lower: true }) + '-' + Date.now(),
         })
-        .then((doc) => doc.toObject());
+        .then((doc) => doc.toJSON({ virtuals: true }));
 
       this.searchClient.emit('search.product.index', createdProduct);
 
@@ -96,7 +96,7 @@ export class ProductsService {
       throw new RpcException('Invalid ID');
     }
 
-    const product = await this.productModel.findById(id).lean().exec();
+    const product = (await this.productModel.findById(id).exec()).toJSON();
     if (!product) {
       throw new RpcException(`Product with (${id}) not found`);
     }
@@ -105,7 +105,7 @@ export class ProductsService {
   }
 
   async findBySlug(slug: string): Promise<Product> {
-    const product = await this.productModel.findOne({ slug }).lean().exec();
+    const product = (await this.productModel.findOne({ slug }).exec()).toJSON();
     if (!product) {
       throw new RpcException(`Product with slug(${slug}) not found`);
     }
@@ -118,10 +118,11 @@ export class ProductsService {
       throw new RpcException('Invalid ID');
     }
 
-    const product = await this.productModel
-      .findByIdAndUpdate(id, updateProductDto, { new: true })
-      .lean()
-      .exec();
+    const product = (
+      await this.productModel
+        .findByIdAndUpdate(id, updateProductDto, { new: true })
+        .exec()
+    ).toJSON();
 
     if (!product) {
       throw new RpcException(`Product with (${id}) not found`);
