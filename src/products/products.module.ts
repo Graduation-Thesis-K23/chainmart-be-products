@@ -37,6 +37,27 @@ import { Product, ProductSchema } from './schemas/product.shema';
         }),
         inject: [ConfigService],
       },
+      {
+        name: 'BATCH_SERVICE',
+        imports: [ConfigModule],
+        useFactory: async (configService: ConfigService) => ({
+          transport: Transport.KAFKA,
+          options: {
+            client: {
+              clientId: 'batch',
+              brokers: [
+                `${configService.get('KAFKA_HOST')}:${configService.get(
+                  'KAFKA_PORT',
+                )}`,
+              ],
+            },
+            consumer: {
+              groupId: 'batch-consumer',
+            },
+          },
+        }),
+        inject: [ConfigService],
+      },
     ]),
   ],
   controllers: [ProductsController],

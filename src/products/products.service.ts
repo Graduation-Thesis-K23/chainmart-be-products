@@ -20,6 +20,9 @@ export class ProductsService {
     @Inject('SEARCH_SERVICE')
     private readonly searchClient: ClientKafka,
 
+    @Inject('BATCH_SERVICE')
+    private readonly batchClient: ClientKafka,
+
     @InjectModel(Product.name)
     private productModel: PaginateModel<Product>,
   ) {}
@@ -35,6 +38,10 @@ export class ProductsService {
         .then((doc) => doc.toJSON({ virtuals: true }));
 
       this.searchClient.emit('search.product.index', createdProduct);
+      this.batchClient.emit('batches.orders.created', {
+        sync_id: createdProduct._id,
+        ...createdProduct,
+      });
 
       return createdProduct;
     } catch (error) {
