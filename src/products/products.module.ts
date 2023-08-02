@@ -58,6 +58,29 @@ import { Product, ProductSchema } from './schemas/product.shema';
         }),
         inject: [ConfigService],
       },
+      {
+        name: 'RATE_SERVICE',
+        imports: [ConfigModule],
+        inject: [ConfigService],
+        useFactory: async (configService) => {
+          return {
+            transport: Transport.KAFKA,
+            options: {
+              client: {
+                clientId: 'rate',
+                brokers: [
+                  `${configService.get('KAFKA_HOST')}:${configService.get(
+                    'KAFKA_PORT',
+                  )}`,
+                ],
+              },
+              consumer: {
+                groupId: 'rate-consumer',
+              },
+            },
+          };
+        },
+      },
     ]),
   ],
   controllers: [ProductsController],

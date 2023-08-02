@@ -23,6 +23,9 @@ export class ProductsService {
     @Inject('BATCH_SERVICE')
     private readonly batchClient: ClientKafka,
 
+    @Inject('RATE_SERVICE')
+    private readonly rateClient: ClientKafka,
+
     @InjectModel(Product.name)
     private productModel: PaginateModel<Product>,
   ) {}
@@ -41,6 +44,12 @@ export class ProductsService {
       this.batchClient.emit('batches.orders.created', {
         sync_id: createdProduct._id,
         ...createdProduct,
+      });
+      this.rateClient.emit('rates.product.created', {
+        product_id: createdProduct._id,
+        name: createdProduct.name,
+        price: createdProduct.price,
+        slug: createdProduct.slug,
       });
 
       return createdProduct;
