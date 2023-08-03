@@ -3,7 +3,11 @@ import * as mongoose from 'mongoose';
 
 export type ProductDocument = mongoose.HydratedDocument<Product>;
 
-@Schema()
+@Schema({
+  toJSON: {
+    virtuals: true,
+  },
+})
 export class Product {
   @Prop()
   name: string;
@@ -46,4 +50,10 @@ export class Product {
   slug: string;
 }
 
-export const ProductSchema = SchemaFactory.createForClass(Product);
+const ProductSchema = SchemaFactory.createForClass(Product);
+
+ProductSchema.virtual('id').get(function () {
+  return this._id.toHexString();
+});
+
+export { ProductSchema };

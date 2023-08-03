@@ -68,7 +68,7 @@ export class ProductsService {
             $in: ids,
           },
         })
-        .lean()
+        .lean({ virtuals: true })
         .exec();
     } catch (error) {
       throw new RpcException('Cannot find products by list of id');
@@ -80,7 +80,10 @@ export class ProductsService {
       throw new RpcException('Invalid ID');
     }
 
-    const product = await this.productModel.findById(id).lean().exec();
+    const product = await this.productModel
+      .findById(id)
+      .lean({ virtuals: true })
+      .exec();
     if (!product) {
       throw new RpcException(`Product with (${id}) not found`);
     }
@@ -89,7 +92,10 @@ export class ProductsService {
   }
 
   async findBySlug(slug: string): Promise<Product> {
-    const product = await this.productModel.findOne({ slug }).lean().exec();
+    const product = await this.productModel
+      .findOne({ slug })
+      .lean({ virtuals: true })
+      .exec();
     if (!product) {
       throw new RpcException(`Product with slug(${slug}) not found`);
     }
@@ -104,7 +110,7 @@ export class ProductsService {
 
     const product = await this.productModel
       .findByIdAndUpdate(id, updateProductDto, { new: true })
-      .lean()
+      .lean({ virtuals: true })
       .exec();
 
     if (!product) {
@@ -121,7 +127,10 @@ export class ProductsService {
       throw new RpcException('Invalid ID');
     }
 
-    const product = await this.productModel.findByIdAndDelete(id).lean().exec();
+    const product = await this.productModel
+      .findByIdAndDelete(id)
+      .lean({ virtuals: true })
+      .exec();
     if (!product) {
       throw new RpcException(`Product with (${id}) not found`);
     }
