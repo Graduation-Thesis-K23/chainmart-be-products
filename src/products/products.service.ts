@@ -28,6 +28,9 @@ export class ProductsService {
 
     @InjectModel(Product.name)
     private productModel: PaginateModel<Product>,
+
+    @Inject('ORDER_SERVICE')
+    private readonly orderClient: ClientKafka,
   ) {}
 
   async create(createProductDto: CreateProductDto) {
@@ -50,6 +53,15 @@ export class ProductsService {
         name: createdProduct.name,
         price: createdProduct.price,
         slug: createdProduct.slug,
+      });
+      // send order orders.product.created;
+      this.orderClient.emit('orders.product.created', {
+        id: createdProduct._id,
+        name: createdProduct.name,
+        price: createdProduct.price,
+        slug: createdProduct.slug,
+        image: createdProduct.images[0],
+        sale: createdProduct.sale,
       });
 
       return createdProduct;

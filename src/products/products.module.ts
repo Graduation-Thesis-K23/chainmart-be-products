@@ -81,6 +81,29 @@ import { Product, ProductSchema } from './schemas/product.shema';
           };
         },
       },
+      {
+        name: 'ORDER_SERVICE',
+        imports: [ConfigModule],
+        inject: [ConfigService],
+        useFactory: async (configService) => {
+          return {
+            transport: Transport.KAFKA,
+            options: {
+              client: {
+                clientId: 'order',
+                brokers: [
+                  `${configService.get('KAFKA_HOST')}:${configService.get(
+                    'KAFKA_PORT',
+                  )}`,
+                ],
+              },
+              consumer: {
+                groupId: 'order-consumer',
+              },
+            },
+          };
+        },
+      },
     ]),
   ],
   controllers: [ProductsController],
