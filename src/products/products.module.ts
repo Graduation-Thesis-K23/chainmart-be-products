@@ -19,11 +19,12 @@ import { Product, ProductSchema } from './schemas/product.shema';
       {
         name: 'SEARCH_SERVICE',
         imports: [ConfigModule],
+        inject: [ConfigService],
         useFactory: async (configService: ConfigService) => ({
           transport: Transport.KAFKA,
           options: {
             client: {
-              clientId: 'search',
+              clientId: 'products-search',
               brokers: [
                 `${configService.get('KAFKA_HOST')}:${configService.get(
                   'KAFKA_PORT',
@@ -31,11 +32,31 @@ import { Product, ProductSchema } from './schemas/product.shema';
               ],
             },
             consumer: {
-              groupId: 'search-consumer',
+              groupId: 'search-consumer-products',
             },
           },
         }),
+      },
+      {
+        name: 'BATCH_SERVICE',
+        imports: [ConfigModule],
         inject: [ConfigService],
+        useFactory: async (configService: ConfigService) => ({
+          transport: Transport.KAFKA,
+          options: {
+            client: {
+              clientId: 'products-batch',
+              brokers: [
+                `${configService.get('KAFKA_HOST')}:${configService.get(
+                  'KAFKA_PORT',
+                )}`,
+              ],
+            },
+            consumer: {
+              groupId: 'batch-consumer-producst',
+            },
+          },
+        }),
       },
       {
         name: 'BATCH_SERVICE',

@@ -12,6 +12,8 @@ import * as mongoosePaginate from 'mongoose-paginate-v2';
       useFactory: async (configService: ConfigService) => {
         mongoose.plugin(mongooseDelete, { deletedAt: true });
         mongoose.plugin(mongoosePaginate);
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
+        mongoose.plugin(require('mongoose-lean-virtuals'));
 
         return {
           uri: configService.get<string>('MONGODB_URI'),
