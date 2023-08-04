@@ -67,7 +67,7 @@ import { Product, ProductSchema } from './schemas/product.shema';
             transport: Transport.KAFKA,
             options: {
               client: {
-                clientId: 'rate',
+                clientId: 'rate-products',
                 brokers: [
                   `${configService.get('KAFKA_HOST')}:${configService.get(
                     'KAFKA_PORT',
@@ -90,7 +90,7 @@ import { Product, ProductSchema } from './schemas/product.shema';
             transport: Transport.KAFKA,
             options: {
               client: {
-                clientId: 'order',
+                clientId: 'order-products',
                 brokers: [
                   `${configService.get('KAFKA_HOST')}:${configService.get(
                     'KAFKA_PORT',
@@ -98,7 +98,7 @@ import { Product, ProductSchema } from './schemas/product.shema';
                 ],
               },
               consumer: {
-                groupId: 'order-consumer',
+                groupId: 'orders-consumer',
               },
             },
           };
