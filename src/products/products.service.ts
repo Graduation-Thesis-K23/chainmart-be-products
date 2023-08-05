@@ -53,6 +53,7 @@ export class ProductsService {
         name: createdProduct.name,
         price: createdProduct.price,
         slug: createdProduct.slug,
+        image: createdProduct.images[0],
       });
       // send order orders.product.created;
       this.orderClient.emit('orders.product.created', {
