@@ -7,6 +7,7 @@ import slugify from 'slugify';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { Product } from './schemas/product.shema';
+import { SearchAndFilterQueryDto } from './dto/search-and-filter.dto';
 
 export interface StaticPaths {
   params: {
@@ -84,6 +85,65 @@ export class ProductsService {
     } catch (error) {
       throw new RpcException('Cannot find products');
     }
+  }
+
+  async searchAndFilter(searchAndFilterQueryDto: SearchAndFilterQueryDto) {
+    try {
+      const { page, categories, maxPrice, minPrice, orderBy, keyword } =
+        searchAndFilterQueryDto;
+      console.log(page, categories, maxPrice, minPrice, orderBy, keyword);
+
+      let sortBy;
+      let sortDirection = -1;
+
+      switch (orderBy) {
+        case 'latest':
+          sortBy = 'created_at';
+          break;
+        case 'sales':
+          sortBy = 'sale';
+          break;
+        case 'asc':
+          sortBy = 'price';
+          break;
+        case 'desc':
+          sortDirection = 1;
+          sortBy = 'price';
+          break;
+        default:
+          sortBy = 'created_at';
+          break;
+      }
+
+      const options = {
+        page: page || 1,
+        limit: 12,
+        lean: true,
+        sort: {
+          [sortBy]: sortDirection,
+        },
+      };
+
+      const categoryIds = categories?.split(',');
+
+      const query = {
+        ...(minPrice && { price: { $gte: minPrice } }),
+        ...(maxPrice && { price: { $lte: maxPrice } }),
+        ...(maxPrice &&
+          minPrice && {
+            price: { $gte: minPrice, $lte: maxPrice },
+          }),
+        ...(keyword && { name: { $regex: keyword, $options: 'i' } }),
+        ...(categories && { category: { $in: categoryIds } }),
+      };
+
+      console.log('query', query);
+      console.log('options', options);
+
+      const products = await this.productModel.paginate(query, options);
+
+      return products;
+    } catch (error) {}
   }
 
   async staticPaths() {
