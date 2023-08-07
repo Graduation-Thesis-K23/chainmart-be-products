@@ -24,14 +24,14 @@ export class ProductsService {
     @Inject('BATCH_SERVICE')
     private readonly batchClient: ClientKafka,
 
+    @Inject('ORDER_SERVICE')
+    private readonly orderClient: ClientKafka,
+
     @Inject('RATE_SERVICE')
     private readonly rateClient: ClientKafka,
 
     @InjectModel(Product.name)
     private productModel: PaginateModel<Product>,
-
-    @Inject('ORDER_SERVICE')
-    private readonly orderClient: ClientKafka,
   ) {}
 
   async create(createProductDto: CreateProductDto) {
@@ -42,7 +42,7 @@ export class ProductsService {
           slug:
             slugify(createProductDto.name, { lower: true }) + '-' + Date.now(),
         })
-        .then((doc) => doc.toJSON({ virtuals: true }));
+        .then((doc) => doc.toObject({ virtuals: true }));
 
       this.searchClient.emit('search.product.index', createdProduct);
       this.batchClient.emit('batches.orders.created', {
@@ -150,7 +150,7 @@ export class ProductsService {
     try {
       const products = await this.productModel
         .find({}, { slug: 1 })
-        .lean()
+        .lean({ virtuals: true })
         .exec();
 
       const staticPaths: StaticPaths[] = products.map((product) => ({
@@ -173,7 +173,7 @@ export class ProductsService {
             $in: ids,
           },
         })
-        .lean()
+        .lean({ virtuals: true })
         .exec();
     } catch (error) {
       throw new RpcException('Cannot find products by list of id');
@@ -185,7 +185,10 @@ export class ProductsService {
       throw new RpcException('Invalid ID');
     }
 
-    const product = (await this.productModel.findById(id).exec()).toJSON();
+    const product = await this.productModel
+      .findById(id)
+      .lean({ virtuals: true })
+      .exec();
     if (!product) {
       throw new RpcException(`Product with (${id}) not found`);
     }
@@ -194,7 +197,10 @@ export class ProductsService {
   }
 
   async findBySlug(slug: string): Promise<Product> {
-    const product = (await this.productModel.findOne({ slug }).exec()).toJSON();
+    const product = await this.productModel
+      .findOne({ slug })
+      .lean({ virtuals: true })
+      .exec();
     if (!product) {
       throw new RpcException(`Product with slug(${slug}) not found`);
     }
@@ -207,28 +213,34 @@ export class ProductsService {
       throw new RpcException('Invalid ID');
     }
 
-    const product = (
-      await this.productModel
-        .findByIdAndUpdate(id, updateProductDto, { new: true })
-        .exec()
-    ).toJSON();
+    const product = await this.productModel
+      .findByIdAndUpdate(id, updateProductDto, { new: true })
+      .lean({ virtuals: true })
+      .exec();
 
     if (!product) {
       throw new RpcException(`Product with (${id}) not found`);
     }
+
+    this.searchClient.emit('search.product.update', product);
 
     return product;
   }
 
-  async delete(id: string): Promise<string> {
+  async delete(id: string) {
     if (!isValidObjectId(id)) {
       throw new RpcException('Invalid ID');
     }
 
-    const product = await this.productModel.findByIdAndDelete(id).lean().exec();
+    const product = await this.productModel
+      .findByIdAndDelete(id)
+      .lean({ virtuals: true })
+      .exec();
     if (!product) {
       throw new RpcException(`Product with (${id}) not found`);
     }
+
+    this.searchClient.emit('search.product.delete', id);
 
     return `Product with id(${id}) have been deleted`;
   }
