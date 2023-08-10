@@ -7,6 +7,7 @@ export type ProductDocument = mongoose.HydratedDocument<Product>;
   toJSON: {
     virtuals: true,
   },
+  timestamps: true,
 })
 export class Product {
   @Prop()
