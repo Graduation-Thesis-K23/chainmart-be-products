@@ -8,6 +8,7 @@ import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { Product } from './schemas/product.shema';
 import { SearchAndFilterQueryDto } from './dto/search-and-filter.dto';
+import { removeAccents } from 'src/helpers/process-accents';
 
 export interface StaticPaths {
   params: {
@@ -91,7 +92,9 @@ export class ProductsService {
     try {
       const { page, categories, maxPrice, minPrice, orderBy, keyword } =
         searchAndFilterQueryDto;
-      console.log(page, categories, maxPrice, minPrice, orderBy, keyword);
+      console.log(page, categories, maxPrice, minPrice, orderBy);
+      const accents = removeAccents(keyword);
+      console.log(keyword, accents);
 
       let sortBy;
       let sortDirection = -1;
@@ -133,8 +136,13 @@ export class ProductsService {
           minPrice && {
             price: { $gte: minPrice, $lte: maxPrice },
           }),
-        ...(keyword && { name: { $regex: keyword, $options: 'i' } }),
         ...(categories && { category: { $in: categoryIds } }),
+        ...(keyword && {
+          slug: {
+            $regex: accents,
+            $options: 'ui',
+          },
+        }),
       };
 
       console.log('query', query);
@@ -144,6 +152,21 @@ export class ProductsService {
 
       return products;
     } catch (error) {}
+  }
+  async search(keyword: string) {
+    const accents = removeAccents(keyword);
+    console.log(keyword, accents);
+
+    // regex access
+
+    const products = await this.productModel.find({
+      slug: {
+        $regex: accents,
+        $options: 'ui',
+      },
+    });
+
+    return products;
   }
 
   async staticPaths() {

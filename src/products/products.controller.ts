@@ -56,6 +56,11 @@ export class ProductsController {
     return this.productsService.searchAndFilter(updateProductDto);
   }
 
+  @MessagePattern('products.search')
+  search(@Payload() keyword: string) {
+    return this.productsService.search(keyword);
+  }
+
   @MessagePattern('products.delete')
   delete(@Payload() id: string) {
     return this.productsService.delete(id);
