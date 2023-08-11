@@ -159,12 +159,16 @@ export class ProductsService {
 
     // regex access
 
-    const products = await this.productModel.find({
-      slug: {
-        $regex: accents,
-        $options: 'ui',
-      },
-    });
+    const products = await this.productModel
+      .find({
+        slug: {
+          $regex: accents,
+          $options: 'ui',
+        },
+      })
+      .limit(5)
+      .lean({ virtuals: true })
+      .exec();
 
     return products;
   }
