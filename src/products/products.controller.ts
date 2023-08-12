@@ -1,5 +1,5 @@
-import { Controller, UseFilters } from '@nestjs/common';
-import { MessagePattern, Payload } from '@nestjs/microservices';
+import { Controller, Inject, UseFilters } from '@nestjs/common';
+import { ClientKafka, MessagePattern, Payload } from '@nestjs/microservices';
 
 import { ProductsService, StaticPaths } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
@@ -24,6 +24,11 @@ export class ProductsController {
   @MessagePattern('products.findall')
   findAll(@Payload() payload: PaginationOptions) {
     return this.productsService.findAll(payload.page, payload.limit);
+  }
+
+  @MessagePattern('products.get-products-by-main')
+  getProductsByMain() {
+    return this.productsService.getProductsByMain();
   }
 
   @MessagePattern('products.staticpaths')

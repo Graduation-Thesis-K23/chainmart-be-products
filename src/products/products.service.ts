@@ -87,6 +87,25 @@ export class ProductsService {
       throw new RpcException('Cannot find products');
     }
   }
+  async getProductsByMain() {
+    console.log('getProductsByMain');
+
+    // get 25 products order by sale but not paginate
+    try {
+      const result = await this.productModel
+        .find()
+        .sort({ sale: -1 })
+        .limit(25)
+        .lean({ virtuals: true })
+        .exec();
+
+      console.log('result', result);
+
+      return result;
+    } catch (error) {
+      throw new RpcException('Cannot find products');
+    }
+  }
 
   async searchAndFilter(searchAndFilterQueryDto: SearchAndFilterQueryDto) {
     try {
@@ -223,7 +242,7 @@ export class ProductsService {
     return product;
   }
 
-  async findBySlug(slug: string): Promise<Product> {
+  async findBySlug(slug: string) {
     const product = await this.productModel
       .findOne({ slug })
       .lean({ virtuals: true })

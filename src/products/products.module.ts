@@ -40,32 +40,11 @@ import { Product, ProductSchema } from './schemas/product.shema';
       {
         name: 'BATCH_SERVICE',
         imports: [ConfigModule],
-        inject: [ConfigService],
         useFactory: async (configService: ConfigService) => ({
           transport: Transport.KAFKA,
           options: {
             client: {
-              clientId: 'products-batch',
-              brokers: [
-                `${configService.get('KAFKA_HOST')}:${configService.get(
-                  'KAFKA_PORT',
-                )}`,
-              ],
-            },
-            consumer: {
-              groupId: 'batch-consumer-producst',
-            },
-          },
-        }),
-      },
-      {
-        name: 'BATCH_SERVICE',
-        imports: [ConfigModule],
-        useFactory: async (configService: ConfigService) => ({
-          transport: Transport.KAFKA,
-          options: {
-            client: {
-              clientId: 'batch',
+              clientId: 'batch-products',
               brokers: [
                 `${configService.get('KAFKA_HOST')}:${configService.get(
                   'KAFKA_PORT',
