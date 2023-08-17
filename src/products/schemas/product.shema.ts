@@ -54,6 +54,11 @@ export class Product {
   slug: string;
 
   @Prop({
+    default: true,
+  })
+  show: boolean;
+
+  @Prop({
     default: Date.now,
   })
   created_at: Date;

@@ -53,6 +53,7 @@ export class ProductsController {
 
   @MessagePattern('products.update')
   update(@Payload() updateProductDto: UpdateProductDto) {
+    console.log(updateProductDto);
     return this.productsService.update(updateProductDto.id, updateProductDto);
   }
 
