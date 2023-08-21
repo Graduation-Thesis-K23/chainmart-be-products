@@ -74,6 +74,10 @@ export class ProductsService {
     }
   }
 
+  async healthCheck() {
+    return 'product service is working';
+  }
+
   async findAll(page: number, limit: number) {
     try {
       const options = {

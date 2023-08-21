@@ -16,6 +16,11 @@ interface PaginationOptions {
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
+  @MessagePattern('products.health-check')
+  healthCheck() {
+    return this.productsService.healthCheck();
+  }
+
   @MessagePattern('products.create')
   create(@Payload() createProductDto: CreateProductDto) {
     return this.productsService.create(createProductDto);
