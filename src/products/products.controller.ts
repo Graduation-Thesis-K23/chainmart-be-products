@@ -1,5 +1,5 @@
-import { Controller, Inject, UseFilters } from '@nestjs/common';
-import { ClientKafka, MessagePattern, Payload } from '@nestjs/microservices';
+import { Controller, UseFilters } from '@nestjs/common';
+import { MessagePattern, Payload } from '@nestjs/microservices';
 
 import { ProductsService, StaticPaths } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';

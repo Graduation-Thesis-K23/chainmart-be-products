@@ -1,11 +1,11 @@
-import { Transform } from "class-transformer";
-import { IsEnum, IsNumber, IsOptional, IsString } from "class-validator";
+import { Transform } from 'class-transformer';
+import { IsEnum, IsNumber, IsOptional, IsString } from 'class-validator';
 
 enum SortBy {
-  ASC = "asc",
-  DESC = "desc",
-  LATEST = "latest",
-  SALES = "sales",
+  ASC = 'asc',
+  DESC = 'desc',
+  LATEST = 'latest',
+  SALES = 'sales',
 }
 
 export class SearchAndFilterQueryDto {
