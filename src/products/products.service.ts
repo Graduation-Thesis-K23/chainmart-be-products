@@ -85,15 +85,12 @@ export class ProductsService {
         limit: limit || 10,
         lean: true,
       };
-      console.log('options', options);
       return await this.productModel.paginate({}, options);
     } catch (error) {
       throw new RpcException('Cannot find products');
     }
   }
   async getProductsByMain() {
-    console.log('getProductsByMain');
-
     // get 25 products order by sale but not paginate
     try {
       const result = await this.productModel
@@ -102,8 +99,6 @@ export class ProductsService {
         .limit(25)
         .lean({ virtuals: true })
         .exec();
-
-      console.log('result', result);
 
       return result;
     } catch (error) {
@@ -115,9 +110,7 @@ export class ProductsService {
     try {
       const { page, categories, maxPrice, minPrice, orderBy, keyword } =
         searchAndFilterQueryDto;
-      console.log(page, categories, maxPrice, minPrice, orderBy);
       const accents = removeAccents(keyword);
-      console.log(keyword, accents);
 
       let sortBy;
       let sortDirection = -1;
@@ -168,9 +161,6 @@ export class ProductsService {
         }),
       };
 
-      console.log('query', query);
-      console.log('options', options);
-
       const products = await this.productModel.paginate(query, options);
 
       return products;
@@ -178,7 +168,6 @@ export class ProductsService {
   }
   async search(keyword: string) {
     const accents = removeAccents(keyword);
-    console.log(keyword, accents);
 
     // regex access
 
