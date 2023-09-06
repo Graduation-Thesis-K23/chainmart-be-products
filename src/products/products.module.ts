@@ -25,11 +25,7 @@ import { Product, ProductSchema } from './schemas/product.shema';
           options: {
             client: {
               clientId: 'products-search',
-              brokers: [
-                `${configService.get('KAFKA_HOST')}:${configService.get(
-                  'KAFKA_PORT',
-                )}`,
-              ],
+              brokers: configService.get('KAFKA_BROKERS').split(','),
             },
             consumer: {
               groupId: 'search-consumer-products',
@@ -45,11 +41,7 @@ import { Product, ProductSchema } from './schemas/product.shema';
           options: {
             client: {
               clientId: 'batch-products',
-              brokers: [
-                `${configService.get('KAFKA_HOST')}:${configService.get(
-                  'KAFKA_PORT',
-                )}`,
-              ],
+              brokers: configService.get('KAFKA_BROKERS').split(','),
             },
             consumer: {
               groupId: 'batch-consumer',
@@ -68,11 +60,7 @@ import { Product, ProductSchema } from './schemas/product.shema';
             options: {
               client: {
                 clientId: 'rate-products',
-                brokers: [
-                  `${configService.get('KAFKA_HOST')}:${configService.get(
-                    'KAFKA_PORT',
-                  )}`,
-                ],
+                brokers: configService.get('KAFKA_BROKERS').split(','),
               },
               consumer: {
                 groupId: 'rate-consumer',
@@ -91,11 +79,7 @@ import { Product, ProductSchema } from './schemas/product.shema';
             options: {
               client: {
                 clientId: 'order-products',
-                brokers: [
-                  `${configService.get('KAFKA_HOST')}:${configService.get(
-                    'KAFKA_PORT',
-                  )}`,
-                ],
+                brokers: configService.get('KAFKA_BROKERS').split(','),
               },
               consumer: {
                 groupId: 'orders-consumer',
